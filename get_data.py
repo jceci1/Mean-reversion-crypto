@@ -73,7 +73,7 @@ tokens = [
     'ARBUSDT', 'OPUSDT', 'MATICUSDT',
     'LDOUSDT', 
     'UNIUSDT', 'AAVEUSDT', 'CRVUSDT', 'COMPUSDT', 'DYDXUSDT', 'GMXUSDT', 'SUSHIUSDT',
-    'DOGEUSDT', 'SHIBUSDT', 'PEPEUSDT', 'WIFUSDT', 'FLOKIUSDT', 'TRUMPUSDT', "FARTCOINUSDT",
+    'DOGEUSDT', 'SHIBUSDT', 'PEPEUSDT', 'WIFUSDT', 'FLOKIUSDT', 'TRUMPUSDT', 
     'FETUSDT', 'INJUSDT',
     'LUNAUSDT', 'FTTUSDT'
 ]
@@ -92,7 +92,7 @@ for token in tokens:
     save_to_csv(df_15m, token, "15m", folder="pairs data")
     save_to_csv(df_1h, token, "1h", folder="pairs data")
     save_to_csv(df_4h, token, "4h", folder="pairs data")
-    save_to_csv(df_1d, token, "1h", folder="pairs data")
+    save_to_csv(df_1d, token, "1d", folder="pairs data")
 
 
 
