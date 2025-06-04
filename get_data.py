@@ -3,6 +3,7 @@ import time
 import requests
 import pandas as pd
 
+#fetch data from Binance Rest API
 def get_klines(symbol, interval, start_time=None, end_time=None, limit=1000, retries=3):
     url = 'https://api.binance.com/api/v3/klines'
     params = {
@@ -16,24 +17,27 @@ def get_klines(symbol, interval, start_time=None, end_time=None, limit=1000, ret
         params['endTime'] = end_time
 
     for attempt in range(retries):
+        #combats problems with vpn
         try:
             response = requests.get(url, params=params, timeout=10)
             response.raise_for_status()
             return response.json()
         except requests.exceptions.RequestException as e:
             print(f"error fetching {symbol} ({interval}) attempt {attempt + 1}/{retries}: {e}")
-            time.sleep(1)  # brief pause before retry
+            time.sleep(0.5)
 
     print(f"failed to fetch {symbol} ({interval}) after {retries} retries.")
     return []
 
 
+#formats and sets up Binance data collection
 def get_data(candles_needed, candle_size, symbol, interval):
     
     now = int(time.time() * 1000)
     candles = []
     start_time = now - candles_needed*candle_size
 
+    #Loops as needed since Binance only allows 1000 candles per API call
     while candles_needed > 0:
         fetch_number = min(candles_needed, 1000)
 
@@ -60,6 +64,8 @@ def get_data(candles_needed, candle_size, symbol, interval):
     df.set_index("open_time", inplace=True)
     return df[["close"]]
 
+
+#saves as csv
 def save_to_csv(df, symbol, interval, folder="crypto_data"):
     os.makedirs(folder, exist_ok=True)
     filename = f"{symbol}_{interval}.csv"
@@ -68,6 +74,7 @@ def save_to_csv(df, symbol, interval, folder="crypto_data"):
     print(f"Saved {symbol} data to {path}")
 
 
+#token list
 tokens = [
     'BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'BNBUSDT', 'ADAUSDT', 'AVAXUSDT', 'DOTUSDT', 'ATOMUSDT', 'NEARUSDT',
     'ARBUSDT', 'OPUSDT', 'MATICUSDT',
@@ -78,12 +85,15 @@ tokens = [
     'LUNAUSDT', 'FTTUSDT'
 ]
 
+
+#candle sizes in milliseconds
 ticks_15m = 60*15*1000
 ticks_1h = ticks_15m*4
 ticks_4h = ticks_1h*4
 ticks_1d =  ticks_1h*24
 
 
+#gets data for all tokens at all lengths
 for token in tokens:
     df_15m = get_data(4500, ticks_15m, token, '15m')
     df_1h = get_data(2000, ticks_1h, token, '1h')
